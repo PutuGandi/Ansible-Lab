@@ -30,22 +30,19 @@
       template:
         src: nginx.conf.j2 
         dest: "{{ web_root }}/nginx.conf"
-        #    - name: Templating File Web Root to Ubuntu
-        #template:
-        #src: default.j2
-        #dest: "{{ web_root }}/default"
-    - name: Restart Nginx Service
+    - name: Templating File Web Root to Ubuntu
+      template:
+        src: default.j2
+        dest: "{{ web_root }}/default"
+    - name: Restart Nginx
       service:
         name: nginx
         state: restarted
+      notify: Check HTTP Service
+  handlers:
     - name: Check HTTP Service
       uri:
         url: http://{{ ansible_default_ipv4.address }}
         status_code: 200
-      notify: Restart Nginx
-  handlers:
-    - name: Restart Nginx
-      service:
-       name: nginx
-       state: restarted 
+
 ...
