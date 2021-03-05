@@ -1,0 +1,51 @@
+---
+- name: Praktek Gandi
+  hosts: linux
+  become: True
+  vars_files:
+    - vars/logos.yaml
+  tasks:
+    - name: Install Epel
+      yum:
+        name: epel-release
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+    - name: Install Nginx 
+      package:
+        name: nginx
+        state: latest
+        update_cache: yes
+    - name: Template index.html-base.j2
+      template:
+        src: index.html-easter_egg.j2 
+        dest: "{{ nginx_root_location  }}/index.html"
+        mode: '0644'
+    - name: Unarchive playbook stacker game
+      unarchive:
+        src: playbook_stacker.zip 
+        dest: "{{ nginx_root_location }}"
+        mode: '0755'
+    - name: Templating File Web Root to CentOS
+      template:
+        src: nginx.conf.j2 
+        dest: "{{ web_root }}/nginx.conf"
+        #    - name: Templating File Web Root to Ubuntu
+        #template:
+        #src: default.j2
+        #dest: "{{ web_root }}/default"
+    - name: Restart Nginx Service
+      service:
+        name: nginx
+        state: restarted
+    - name: Check HTTP Service
+      uri:
+        url: http://{{ ansible_default_ipv4.address }}
+        status_code: 200
+      notify: Restart Nginx
+  handlers:
+    - name: Restart Nginx
+      service:
+       name: nginx
+       state: restarted 
+...

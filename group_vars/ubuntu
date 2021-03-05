@@ -1,0 +1,4 @@
+---
+nginx_root_location: /var/www/html
+web_root: /etc/nginx/sites-available
+...

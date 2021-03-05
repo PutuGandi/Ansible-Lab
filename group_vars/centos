@@ -1,0 +1,4 @@
+---
+nginx_root_location: /usr/share/nginx/html
+web_root: /etc/nginx
+...
